@@ -1,7 +1,7 @@
 from flask import Flask, Response, request
 import pymongo
 import json
-
+from Main import *
 
 try:
     mongo = pymongo.MongoClient(
@@ -17,9 +17,20 @@ app = Flask(__name__)
 @app.route("/shops", methods=["GET"])
 def get_shop():
     try:
-        data = list(db.shops.find())
-        for shop in data:
-            shop["_id"] = str(shop["_id"])
+        # data = list(db.shops.find())
+        # for shop in data:
+        #     shop["_id"] = str(shop["_id"])
+        # read the data from the ./datasets/Amsterdam/poi/originals/PoiAMS50.txt and convert it to json
+        data = []
+        with open('./datasets/Amsterdam/poi/originals/PoiAMS50.txt', 'r') as f:
+            lines = f.readlines()
+            for line in lines:
+                line = line.split(' ')
+                data.append({
+                    "_id": line[0],
+                    "longitude": line[1],
+                    "latitude": line[2]
+                })
         return Response(
             response=json.dumps(
                 data
@@ -58,7 +69,11 @@ def create_shop():
 @app.route("/productList", methods=["POST"])
 def receive_product_list():
     try:
-        print(request.get_json())
+        shopping_list = request.get_json()
+        itemsToBuy = []
+        for item in shopping_list:
+            itemsToBuy.append(int(item["name"]))
+        routing_algo(itemsToBuy)
         return Response(
             response=json.dumps(
                 {"message": "product list received"}

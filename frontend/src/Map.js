@@ -62,7 +62,7 @@ function Map() {
 
   // const filteredStations = teslaData.filter(tesla => tesla.address.country === "Canada")
   return (
-    <MapContainer center={[53.5461, -113.4937]} zoom={13} scrollWheelZoom={true} whenCreated={map => setMap(map)}>
+    <MapContainer center={[52.3676, 4.9041]} zoom={13} scrollWheelZoom={true} whenCreated={map => setMap(map)}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -72,7 +72,7 @@ function Map() {
         <Marker key={(shop._id).str} position={[shop.latitude, shop.longitude]}>
           <Popup position={[shop.latitude, shop.longitude]}>
             <div>
-              <h2>{"Name: " + shop.name}</h2>
+              <h2>{"ID: " + shop._id}</h2>
               {/* <p>{"Status: " + shop.status}</p>
               <p>{"Number of options: " + shop.stallCount}</p> */}
             </div>

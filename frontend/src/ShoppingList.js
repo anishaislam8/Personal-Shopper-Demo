@@ -6,18 +6,17 @@ function ShoppingList() {
 
   const [inputArr, setInputArr] = useState([])
   const [inputData, setInputData] = useState({
-    name: "",
-    quantity: ""
+    name: ""
   })
-  const [products, setProducts] = useState([])
   const [selected, setSelected] = useState('default');
 
-  useEffect(() => {
-    fetch('/products').then(response =>
-      response.json().then(data => {
-        setProducts(data);
-      }))
-  }, []);
+  const products = []
+  for (let i = 0; i < 1000; i++) {
+    products.push({
+      _id: i,
+      item_name: i
+    })
+  }
 
   function changeHandle(e) {
     if(e.target.name === "name"){
@@ -26,12 +25,12 @@ function ShoppingList() {
     setInputData({ ...inputData, [e.target.name]: e.target.value })
   }
 
-  let { name, quantity } = inputData;
+  let { name } = inputData;
 
   function addToList() {
-    setInputArr([...inputArr, { name, quantity }])
+    setInputArr([...inputArr, { name }])
     console.log("What we entered: ", inputData)
-    setInputData({ name: "", quantity: "" })
+    setInputData({ name: "" })
   }
 
   function checkArrayInBackendConsole() {
@@ -65,14 +64,13 @@ function ShoppingList() {
           ))}
         </select>
     </form>
-      <input type="text" name="quantity" autoComplete='off' value={inputData.quantity} onChange={changeHandle} placeholder="Enter the quantity" />
+      {/* <input type="text" name="quantity" autoComplete='off' value={inputData.quantity} onChange={changeHandle} placeholder="Enter the quantity" /> */}
       <button onClick={addToList}>Add Item</button><br /><br />
 
       <table border={1} width="30%" cellPadding={10}>
         <tbody>
           <tr>
             <td>Item</td>
-            <td>Quantity</td>
           </tr>
           {
             inputArr.map(
@@ -80,7 +78,6 @@ function ShoppingList() {
                 return (
                   <tr key={ind}>
                     <td>{info.name}</td>
-                    <td>{info.quantity}</td>
                   </tr>
                 )
               }
