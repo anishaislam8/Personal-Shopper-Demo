@@ -2,6 +2,7 @@ from flask import Flask, Response, request
 import pymongo
 import json
 from Main import *
+import numpy as np
 
 try:
     mongo = pymongo.MongoClient(
@@ -73,10 +74,45 @@ def receive_product_list():
         itemsToBuy = []
         for item in shopping_list:
             itemsToBuy.append(int(item["name"]))
-        routing_algo(itemsToBuy)
+        route1, route2, startNode, endNode = routing_algo(itemsToBuy)
+        startNodeArr = []
+        endNodeArr = []
+        startNodeArr.append(startNode["lat"])
+        startNodeArr.append(startNode["long"])
+        endNodeArr.append(endNode["lat"])
+        endNodeArr.append(endNode["long"])
+        route1POILatLong = []
+        route1POILatLong.append(startNodeArr)
+        route2POILatLong = []
+        route2POILatLong.append(startNodeArr)
+        data = []
+        with open('./datasets/Amsterdam/poi/originals/PoiAMS50.txt', 'r') as f:
+            lines = f.readlines()
+            for line in lines:
+                line = line.split(' ')
+                data.append({
+                    "_id": line[0],
+                    "longitude": line[1],
+                    "latitude": line[2]
+                })
+        route1_pois = np.unique(route1.getPOIs())
+        route2_pois = np.unique(route2.getPOIs())
+        for item in route1_pois:
+            lat_long = []
+            lat_long.append(float(data[item]["latitude"]))
+            lat_long.append(float(data[item]["longitude"]))
+            route1POILatLong.append(lat_long)
+        for item in route2_pois:
+            lat_long = []
+            lat_long.append(float(data[item]["latitude"]))
+            lat_long.append(float(data[item]["longitude"]))
+            route2POILatLong.append(lat_long)
+        route1POILatLong.append(endNodeArr)
+        route2POILatLong.append(endNodeArr)
         return Response(
             response=json.dumps(
-                {"message": "product list received"}
+                {"route1": route1POILatLong, "route2": route2POILatLong, "route1TotalCost": route1.getTotalCost(
+                ), "route2TotalCost": route2.getTotalCost(), "route1Costs": route1.getCosts(), "route2Costs": route2.getCosts()}
             ),
             status=200,
             mimetype="application/json"
@@ -109,8 +145,5 @@ def get_products():
         )
 
 
-
 if __name__ == "__main__":
     app.run(debug=True)  # development mode
-
-    

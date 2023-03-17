@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate, useNavigate} from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import "./shoppingList.css"
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function ShoppingList() {
 
@@ -19,7 +21,7 @@ function ShoppingList() {
   }
 
   function changeHandle(e) {
-    if(e.target.name === "name"){
+    if (e.target.name === "name") {
       setSelected(e.target.value)
     }
     setInputData({ ...inputData, [e.target.name]: e.target.value })
@@ -33,39 +35,51 @@ function ShoppingList() {
     setInputData({ name: "" })
   }
 
+  const navigate = useNavigate();
+
   function checkArrayInBackendConsole() {
     console.log("Objects stored in array: ", inputArr)
     fetch('/productList', {
       method: 'post',
-      headers: {'Content-Type':'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(inputArr)
-     });
-  }
+    })
+      .then(response => response.json())
+      .then(data => {
+        navigate('/chooseRoutingOption', {
+          state: {
+            route1: data.route1,
+            route2: data.route2,
+            route1TotalCost: data.route1TotalCost,
+            route2TotalCost: data.route2TotalCost,
+            route1Costs: data.route1Costs,
+            route2Costs: data.route2Costs
+          }
+        })
 
-  const navigate = useNavigate();
-  
-  function goBack(){
-    navigate(-1);
+      })
   }
-
-  //console.log(products[0])
 
   return (
     <div className='ShoppingList'>
+      <p></p><p></p><p></p>
       <h2>Enter Shopping List</h2>
+      <p></p><p></p><p></p>
       {/* <input type="text" name="name" autoComplete='off' value={inputData.name} onChange={changeHandle} placeholder="Enter product name" /> */}
       <form>
         <select name="name" value={selected} onChange={changeHandle}>
-        <option value='default' disabled>Select an item</option>
+          <option value='default' disabled>Select an item</option>
           {products.map((product) => (
             <option value={product.item_name} key={product._id}>
               {product.item_name}
             </option>
           ))}
         </select>
-    </form>
+      </form>
+      <p></p>
+      <p></p>
       {/* <input type="text" name="quantity" autoComplete='off' value={inputData.quantity} onChange={changeHandle} placeholder="Enter the quantity" /> */}
-      <button onClick={addToList}>Add Item</button><br /><br />
+      <Button variant="success"  onClick={addToList}>Add Item</Button><br /><br />
 
       <table border={1} width="30%" cellPadding={10}>
         <tbody>
@@ -85,9 +99,8 @@ function ShoppingList() {
           }
         </tbody>
       </table>
-      <br/><br/>
-      <button onClick={checkArrayInBackendConsole}>Submit</button>
-      <button onClick={goBack}>Back</button>
+      <br /><br />
+      <Button variant="success"  onClick={checkArrayInBackendConsole}>Submit</Button>
     </div>
   )
 }

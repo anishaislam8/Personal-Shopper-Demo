@@ -159,6 +159,7 @@ def routing_algo(itemsToBuy):
     # print(pois[0].closestNode)
 
     startNode = graph.nodes[8020]
+    print(startNode)
     # calculate distance between each POI and startNode
     startToPOIs = []
     calculateLocationToPOIsDist(startNode, pois, startToPOIs, 1)
@@ -202,21 +203,23 @@ def routing_algo(itemsToBuy):
     # now we can implement the algorithm
 
     firstAlgStartTime = time.time()
-    route = findBestRoute(startToPOIItemArray.copy(), currentToNextItemArray.copy(), endToPOIs.copy(), itemsToBuy.copy())
+    route1 = findBestRoute(startToPOIItemArray.copy(), currentToNextItemArray.copy(), endToPOIs.copy(), itemsToBuy.copy())
     firstAlgEndTime = time.time()
     firstAlgDuration = firstAlgEndTime - firstAlgStartTime
-    print(route)
+    print(route1)
     print("firstAlgDuration: {}".format(firstAlgDuration))
 
 
     print()
 
     secondAlgStartTime = time.time()
-    route = findBestRouteContinued(startToPOIItemArray.copy(), currentToNextItemArray.copy(), endToPOIs.copy(), itemsToBuy.copy(), pois, endNode, travelWeight)
+    route2 = findBestRouteContinued(startToPOIItemArray.copy(), currentToNextItemArray.copy(), endToPOIs.copy(), itemsToBuy.copy(), pois, endNode, travelWeight)
     secondAlgEndTime = time.time()
     secondAlgDuration = secondAlgEndTime - secondAlgStartTime
-    print(route)
+    print(route2)
     print("secondAlgDuration: {}".format(secondAlgDuration))
+
+    return route1, route2, startNode, endNode
 
 
 

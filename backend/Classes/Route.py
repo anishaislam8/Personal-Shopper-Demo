@@ -63,3 +63,12 @@ class Route:
 
         self.n[index] += value
         return 
+    
+    def getPOIs(self):
+        return self.POIs
+    
+    def getTotalCost(self):
+        return self.totalCost
+
+    def getCosts(self):
+        return self.costs

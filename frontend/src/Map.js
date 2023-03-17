@@ -1,10 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents} from 'react-leaflet'
+import React, { useEffect, useState } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
 import './App.css';
-import { Link } from 'react-router-dom';
-import RoutingControl from './RoutingControl'
-import ShoppingList from './ShoppingList';
 
 function AddMarkerToClick() {
 
@@ -12,7 +9,7 @@ function AddMarkerToClick() {
   const map = useMapEvents({
     click(e) {
       const newMarker = e.latlng
-      if (markers.length < 2){
+      if (markers.length < 2) {
         setMarkers([...markers, newMarker]);
       }
       else {
@@ -25,7 +22,7 @@ function AddMarkerToClick() {
 
   return (
     <>
-      {markers.map((marker, index) => 
+      {markers.map((marker, index) =>
         <Marker key={(new Date().getTime()).str} position={marker}>
           <Popup position={marker}>
             <div>
@@ -41,9 +38,9 @@ function AddMarkerToClick() {
           end={[markers[1].lat, markers[1].lng]} 
           color={'#FF0000'} 
         /> : null } */}
-        {markers.length === 2? <Navigate to="/createShoppingList" /> : null}
-     
-      
+      {markers.length === 2 ? <Navigate to="/createShoppingList" /> : null}
+
+
     </>
   )
 }
@@ -51,7 +48,7 @@ function AddMarkerToClick() {
 function Map() {
   const [shops, setShops] = useState([]);
   const [map, setMap] = useState(null);
-
+  const { route } = useLocation();
   useEffect(() => {
     fetch('/shops').then(response =>
       response.json().then(data => {
