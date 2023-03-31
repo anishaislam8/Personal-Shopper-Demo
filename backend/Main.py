@@ -13,7 +13,8 @@ from shapely.geometry import Point
 """
 Boeing, G. 2017. OSMnx: New Methods for Acquiring, Constructing, Analyzing, and Visualizing Complex Street Networks. Computers, Environment and Urban Systems 65, 126-139. doi:10.1016/j.compenvurbsys.2017.05.004
 """
-def routing_algo(itemsToBuy):
+def routing_algo(itemsToBuy, startingLat, startingLong, endingLat, endingLong):
+    
     # Create a route
     # route = Route()
     # # Create a POI
@@ -158,16 +159,34 @@ def routing_algo(itemsToBuy):
     #print(sp)
     # print(pois[0].closestNode)
 
-    startNode = graph.nodes[8020]
-    print(startNode)
+    startingPoint = {
+        "lat": startingLat,
+        "long": startingLong
+    }
+    endingPoint = {
+        "lat": endingLat,
+        "long": endingLong
+    }
+
+
+    startNodeId = findClosestNode(graph, startingPoint)
+    print("startnode id: {}".format(startNodeId))
+    startNode = graph.nodes[startNodeId]
     # calculate distance between each POI and startNode
     startToPOIs = []
     calculateLocationToPOIsDist(startNode, pois, startToPOIs, 1)
+
     
-    endNode = graph.nodes[88896]
+    
+    # endNode = graph.nodes[int(endNodeID)]
+    endNodeId = findClosestNode(graph, endingPoint)
+    print("endnode id: {}".format(endNodeId))
+    endNode = graph.nodes[endNodeId]
     # calculate distance between each POI and endNode
     endToPOIs = []
     calculateLocationToPOIsDist(endNode, pois, endToPOIs, travelWeight)
+
+  
 
     # have a 3d array for start to each POI and buying items
     startToPOIItemArray = [[[None, None] for i in range(1000)] for i in range(len(pois))]
@@ -762,11 +781,12 @@ def calculateGeoDistance(node, poi):
     # Haversine formula
     # approximate radius of earth in km
     R = 6373.0
-
+    
     lat1 = math.radians(node['lat'])
     lon1 = math.radians(node['long'])
     lat2 = math.radians(poi.lat)
     lon2 = math.radians(poi.long)
+    
 
     dlon = lon2 - lon1
     dlat = lat2 - lat1
@@ -775,5 +795,46 @@ def calculateGeoDistance(node, poi):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     return R * c
+
+def calculateGeoDistanceBetweenStartEndPointsAndVertices(node, point):
+    # Code taken from stackoverflow
+    # https://stackoverflow.com/questions/19412462/getting-distance-between-two-points-based-on-latitude-longitude
+    # Haversine formula
+    # approximate radius of earth in km
+    R = 6373.0
+    
+    lat1 = math.radians(node['lat'])
+    lon1 = math.radians(node['long'])
+    lat2 = math.radians(point['lat'])
+    lon2 = math.radians(point['long'])
+    
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+
+    a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    return R * c
+
+def findClosestNode(graph, point):
+    # graph is a networkx graph
+    # point is a dictionary with lat and long
+    # returns the closest node in the graph to the point
+    
+    minDist = float('inf')
+    closestNode = None
+    
+    for node in graph.nodes:
+        
+        dist = calculateGeoDistanceBetweenStartEndPointsAndVertices(graph.nodes[node], point)
+        
+        if dist < minDist:
+            minDist = dist
+            closestNode = node
+    
+    return closestNode
+
+
 # main()
 

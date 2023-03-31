@@ -67,23 +67,76 @@ def create_shop():
         print(ex)
 
 
+@app.route("/locations", methods=["GET"])
+def get_locations():
+    try:
+        # data = list(db.shops.find())
+        # for shop in data:
+        #     shop["_id"] = str(shop["_id"])
+        # read the data from the ./datasets/Amsterdam/poi/originals/PoiAMS50.txt and convert it to json
+        data = []
+        with open('./datasets/Amsterdam/roadnetwork/RoadVerticesAMS.txt', 'r') as f:
+            lines = f.readlines()
+            for line in lines:
+                line = line.split(' ')
+                data.append({
+                    "_id": line[0],
+                    "longitude": line[1],
+                    "latitude": line[2]
+                })
+        return Response(
+            response=json.dumps(
+                data
+            ),
+            status=200,
+            mimetype="application/json"
+        )
+    except Exception as ex:
+        print(ex)
+        return Response(
+            response=json.dumps(
+                {"message": "cannot find road vertices"}
+            ),
+            status=500,
+            mimetype="application/json"
+        )
+
+
 @app.route("/productList", methods=["POST"])
 def receive_product_list():
     try:
         shopping_list = request.get_json()
+
+        startingLat = float(shopping_list[0]["name"])
+        startingLong = float(shopping_list[1]["name"])
+        endingLat = float(shopping_list[2]["name"])
+        endingLong = float(shopping_list[3]["name"])
         itemsToBuy = []
-        for item in shopping_list:
+        for item in shopping_list[4:]:
             itemsToBuy.append(int(item["name"]))
-        route1, route2, startNode, endNode = routing_algo(itemsToBuy)
+
+        route1, route2, startNode, endNode = routing_algo(
+            itemsToBuy, startingLat, startingLong, endingLat, endingLong)
+
+        shoppersPosition = []
+        customersPosition = []
         startNodeArr = []
         endNodeArr = []
+
         startNodeArr.append(startNode["lat"])
         startNodeArr.append(startNode["long"])
         endNodeArr.append(endNode["lat"])
         endNodeArr.append(endNode["long"])
+        shoppersPosition.append(startingLat)
+        shoppersPosition.append(startingLong)
+        customersPosition.append(endingLat)
+        customersPosition.append(endingLong)
+
         route1POILatLong = []
+        route1POILatLong.append(shoppersPosition)
         route1POILatLong.append(startNodeArr)
         route2POILatLong = []
+        route2POILatLong.append(shoppersPosition)
         route2POILatLong.append(startNodeArr)
         data = []
         with open('./datasets/Amsterdam/poi/originals/PoiAMS50.txt', 'r') as f:
@@ -108,7 +161,9 @@ def receive_product_list():
             lat_long.append(float(data[item]["longitude"]))
             route2POILatLong.append(lat_long)
         route1POILatLong.append(endNodeArr)
+        route1POILatLong.append(customersPosition)
         route2POILatLong.append(endNodeArr)
+        route2POILatLong.append(customersPosition)
         return Response(
             response=json.dumps(
                 {"route1": route1POILatLong, "route2": route2POILatLong, "route1TotalCost": route1.getTotalCost(

@@ -1,16 +1,26 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import "./shoppingList.css"
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function ShoppingList() {
 
-  const [inputArr, setInputArr] = useState([])
+  
   const [inputData, setInputData] = useState({
     name: ""
   })
   const [selected, setSelected] = useState('default');
+  const markers = useLocation().state.markers
+  const startNode = {
+    lat: markers[0].lat,
+    lng: markers[0].lng
+  }
+  const endNode = {
+    lat: markers[1].lat,
+    lng: markers[1].lng
+  }
+  const [inputArr, setInputArr] = useState([{ name: startNode.lat }, { name: startNode.lng}, { name: endNode.lat }, { name: endNode.lng }])
 
   const products = []
   for (let i = 0; i < 1000; i++) {
@@ -39,6 +49,7 @@ function ShoppingList() {
 
   function checkArrayInBackendConsole() {
     console.log("Objects stored in array: ", inputArr)
+    
     fetch('/productList', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
@@ -87,7 +98,7 @@ function ShoppingList() {
             <td>Item</td>
           </tr>
           {
-            inputArr.map(
+            inputArr.slice(4,inputArr.length).map(
               (info, ind) => {
                 return (
                   <tr key={ind}>

@@ -13,6 +13,7 @@ const RoutingOption = () => {
     const route2TotalCost = useLocation().state.route2TotalCost
     const route1Costs = useLocation().state.route1Costs
     const route2Costs = useLocation().state.route2Costs
+
     
 
     // const setWaypoints = (route) => {
