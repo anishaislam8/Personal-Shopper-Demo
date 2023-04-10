@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function ShoppingList() {
 
-  
+  const [spinner, setSpinner] = useState(false);    
   const [inputData, setInputData] = useState({
     name: ""
   })
@@ -30,6 +30,8 @@ function ShoppingList() {
     })
   }
 
+
+
   function changeHandle(e) {
     if (e.target.name === "name") {
       setSelected(e.target.value)
@@ -50,6 +52,7 @@ function ShoppingList() {
   function checkArrayInBackendConsole() {
     console.log("Objects stored in array: ", inputArr)
     
+    setSpinner(true);
     fetch('/productList', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
@@ -57,6 +60,8 @@ function ShoppingList() {
     })
       .then(response => response.json())
       .then(data => {
+        setSpinner(false);
+        console.log("Data received from backend: ", data)
         navigate('/chooseRoutingOption', {
           state: {
             route1: data.route1,
@@ -64,7 +69,10 @@ function ShoppingList() {
             route1TotalCost: data.route1TotalCost,
             route2TotalCost: data.route2TotalCost,
             route1Costs: data.route1Costs,
-            route2Costs: data.route2Costs
+            route2Costs: data.route2Costs,
+            route1POIs: data.route1POIs,
+            route2POIs: data.route2POIs,
+            itemsToBuy: data.itemsToBuy
           }
         })
 
@@ -76,7 +84,6 @@ function ShoppingList() {
       <p></p><p></p><p></p>
       <h2>Enter Shopping List</h2>
       <p></p><p></p><p></p>
-      {/* <input type="text" name="name" autoComplete='off' value={inputData.name} onChange={changeHandle} placeholder="Enter product name" /> */}
       <form>
         <select name="name" value={selected} onChange={changeHandle}>
           <option value='default' disabled>Select an item</option>
@@ -89,7 +96,6 @@ function ShoppingList() {
       </form>
       <p></p>
       <p></p>
-      {/* <input type="text" name="quantity" autoComplete='off' value={inputData.quantity} onChange={changeHandle} placeholder="Enter the quantity" /> */}
       <Button variant="success"  onClick={addToList}>Add Item</Button><br /><br />
 
       <table border={1} width="30%" cellPadding={10}>
@@ -112,6 +118,11 @@ function ShoppingList() {
       </table>
       <br /><br />
       <Button variant="success"  onClick={checkArrayInBackendConsole}>Submit</Button>
+      {spinner && (
+        <div className="loader-container">
+          <div className="spinner"></div>
+        </div>
+      )}
     </div>
   )
 }

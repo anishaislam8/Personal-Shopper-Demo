@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import './App.css';
-import RoutingControl from './RoutingControl'
+import RoutingControl from './RoutingControl';
 
-
-function Option() {
-    let route = useLocation().state.route
+function Option(props) {
+    let route = props.route
     const shopper_customer_locations = []
     shopper_customer_locations.push(route[0])
     shopper_customer_locations.push(route[route.length - 1])
@@ -39,9 +37,9 @@ function Option() {
                 </Marker>
             ))}
             {initialRoute ? <RoutingControl route={initialRoute} color={'#0000FF'} weight={2} id={0} /> : null}
-            {route ? <RoutingControl route={route} color={'#FF0000'} weight = {4} id={1}/> : null}
-            {endRoute ? <RoutingControl route={endRoute} color={'#0000FF'} weight = {2} id={2} /> : null}
-
+            {route ? <RoutingControl route={route} color={'#FF0000'} weight={4} id={1} /> : null}
+            {endRoute ? <RoutingControl route={endRoute} color={'#0000FF'} weight={2} id={2} /> : null}
+            
         </MapContainer>
     );
 }

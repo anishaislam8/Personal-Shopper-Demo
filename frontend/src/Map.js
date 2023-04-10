@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
-import * as L from 'leaflet';
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-function AddMarkerToClick() {
+
+function AddMarkerToClick(props) {
 
   const [markers, setMarkers] = useState([]);
 
@@ -15,15 +17,12 @@ function AddMarkerToClick() {
         setMarkers([...markers, newMarker]);
       }
       else {
-        //call backend
         setMarkers([])
       }
     },
   })
 
-  const navigate = useNavigate();
-
-
+ 
   return (
     <>
       {markers.map((marker, index) =>
@@ -37,8 +36,12 @@ function AddMarkerToClick() {
           </Popup>
         </Marker>
       )}
+      {markers.length === 2? props.setEntityFunc("customer") : props.setEntityFunc("")}
+      {markers.length === 2? props.setShopperLatFunc(markers[0].lat) : null}
+      {markers.length === 2? props.setShopperLngFunc(markers[0].lng) : null}
+      {markers.length === 2? props.setCustomerLatFunc(markers[1].lat) : null}
+      {markers.length === 2? props.setCustomerLngFunc(markers[1].lng) : null}
 
-      {markers.length === 2 ? navigate("/createShoppingList", { state: { markers: markers } }) : null}
 
 
     </>
@@ -46,26 +49,51 @@ function AddMarkerToClick() {
 }
 
 function Map() {
-  // change the names of the variables
-  const [locations, setLocations] = useState([]);
+
   const [map, setMap] = useState(null);
-  const { route } = useLocation();
   const [entity, setEntity] = useState("");
-  const LeafIcon = L.Icon.extend({
-    options: {}
-  });
+  const [customerLat, setCustomerLat] = useState(0);
+  const [customerLng, setCustomerLng] = useState(0);
+  const [shopperLat, setShopperLat] = useState(0);
+  const [shopperLng, setShopperLng] = useState(0);
 
+  const navigate = useNavigate();
 
-  // const filteredStations = teslaData.filter(tesla => tesla.address.country === "Canada")
+  const createShoppingList = () => {
+    const markers = [
+      {
+        "lat": shopperLat,
+        "lng": shopperLng
+      },
+      {
+        "lat": customerLat,
+        "lng": customerLng
+      }
+    ]
+    navigate("/createShoppingList", { state: { markers: markers } })
+  }
   return (
-    <MapContainer center={[52.3676, 4.9041]} zoom={13} scrollWheelZoom={true} whenCreated={map => setMap(map)}>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <div className='rowC'>
 
-      <AddMarkerToClick />
-    </MapContainer>
+
+      <div className='box'>
+        <p></p>
+        <h3>Select Shopper and Customer locations</h3>
+        <Button variant="success" size="lg" disabled={entity === "customer" ? false : true} onClick={createShoppingList}>Create shopping list</Button>
+      </div>
+
+
+      <MapContainer center={[52.3676, 4.9041]} zoom={13} scrollWheelZoom={true} whenCreated={map => setMap(map)}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        <AddMarkerToClick setEntityFunc={setEntity} setCustomerLatFunc={setCustomerLat} setCustomerLngFunc={setCustomerLng} setShopperLatFunc={setShopperLat} setShopperLngFunc={setShopperLng}/>
+      </MapContainer>
+
+    </div>
+
   );
 }
 

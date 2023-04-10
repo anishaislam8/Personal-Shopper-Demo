@@ -1,4 +1,13 @@
-.leaflet-container{
-  width: 100vw;
+.rowC{display:flex; flex-direction:row;}
+.box{
+  width: 20vw;
   height: 100vh;
+  margin-left: 40px;
+}
+.leaflet-container{
+  width: 80vw;
+  height: 100vh;
+}
+table, th, td {
+  border: 1px solid black;
 }

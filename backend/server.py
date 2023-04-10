@@ -150,6 +150,7 @@ def receive_product_list():
                 })
         route1_pois = np.unique(route1.getPOIs())
         route2_pois = np.unique(route2.getPOIs())
+        
         for item in route1_pois:
             lat_long = []
             lat_long.append(float(data[item]["latitude"]))
@@ -167,7 +168,8 @@ def receive_product_list():
         return Response(
             response=json.dumps(
                 {"route1": route1POILatLong, "route2": route2POILatLong, "route1TotalCost": route1.getTotalCost(
-                ), "route2TotalCost": route2.getTotalCost(), "route1Costs": route1.getCosts(), "route2Costs": route2.getCosts()}
+                ), "route2TotalCost": route2.getTotalCost(), "route1Costs": route1.getCosts(),
+                    "route2Costs": route2.getCosts(), "route1POIs": route1.getPOIs(), "route2POIs": route2.getPOIs(), "itemsToBuy": itemsToBuy}
             ),
             status=200,
             mimetype="application/json"
