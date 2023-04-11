@@ -34,8 +34,6 @@ function ShoppingList() {
     })
   }
 
-
-
   function changeHandle(e) {
     if (e.target.name === "name") {
       setSelected(e.target.value)
