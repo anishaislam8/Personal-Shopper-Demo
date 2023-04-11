@@ -29,9 +29,7 @@ function Option(props) {
                 <Marker position={[location[0], location[1]]}>
                     <Popup position={[location[0], location[1]]}>
                         <div>
-
                             <h2>{index === 0 ? "Shopper" : "Customer"}</h2>
-
                         </div>
                     </Popup>
                 </Marker>

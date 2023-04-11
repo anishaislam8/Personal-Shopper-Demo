@@ -1,3 +1,5 @@
+// Resources used for creating the routing machine layer: https://stackblitz.com/edit/react-leaflet-routing-machine-core-api?file=src%2FRoutingControl.jsx
+
 import L from "leaflet";
 import { createControlComponent } from "@react-leaflet/core";
 import "leaflet-routing-machine";

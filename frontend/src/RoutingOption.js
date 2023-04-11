@@ -26,8 +26,8 @@ const RoutingOption = () => {
                 <h2>Choose route to display</h2>
                 <p></p>
                 <p></p>
-                <Button variant="success" onClick={() => setSelectedRoute('route1')}>First Option</Button>
-                <Button variant="success" onClick={() => setSelectedRoute('route2')}>Second Option</Button>
+                <Button variant='success' size='lg' style={{width:'200px'}} onClick={() => setSelectedRoute('route1')}>First Option</Button>
+                <Button variant='success' size='lg' style={{width:'200px'}} onClick={() => setSelectedRoute('route2')}>Second Option</Button>
                 <p></p>
                 <p></p>
                 <h4>Currently displaying: <b>{selectedRoute}</b></h4>
@@ -51,6 +51,8 @@ const RoutingOption = () => {
                     </div>
                 }
 
+                <footer style={{bottom:0, position:'fixed', width:'20vw', fontSize:'10px', opacity:0.5}}><a href="https://www.flaticon.com/free-icons/pin" title="pin icons">Yellow Pin icons created by Pixel perfect - Flaticon</a></footer>
+
             </div>
 
 
@@ -66,8 +68,8 @@ const RoutingOption = () => {
                     route1TotalCost={route2TotalCost}
                     route1Costs={route2Costs}
                 />}
-
             </div>
+
         </div>
 
     )

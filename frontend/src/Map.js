@@ -1,3 +1,6 @@
+// Resources used for writing the Map class: https://react-leaflet.js.org/docs/start-setup/
+// Resources used for writing the AddMarkerToClick class: https://www.appsloveworld.com/reactjs/200/438/get-latitude-and-longitude-on-click-on-map  
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
@@ -22,7 +25,7 @@ function AddMarkerToClick(props) {
     },
   })
 
- 
+
   return (
     <>
       {markers.map((marker, index) =>
@@ -36,11 +39,11 @@ function AddMarkerToClick(props) {
           </Popup>
         </Marker>
       )}
-      {markers.length === 2? props.setEntityFunc("customer") : props.setEntityFunc("")}
-      {markers.length === 2? props.setShopperLatFunc(markers[0].lat) : null}
-      {markers.length === 2? props.setShopperLngFunc(markers[0].lng) : null}
-      {markers.length === 2? props.setCustomerLatFunc(markers[1].lat) : null}
-      {markers.length === 2? props.setCustomerLngFunc(markers[1].lng) : null}
+      {markers.length === 2 ? props.setEntityFunc("customer") : props.setEntityFunc("")}
+      {markers.length === 2 ? props.setShopperLatFunc(markers[0].lat) : null}
+      {markers.length === 2 ? props.setShopperLngFunc(markers[0].lng) : null}
+      {markers.length === 2 ? props.setCustomerLatFunc(markers[1].lat) : null}
+      {markers.length === 2 ? props.setCustomerLngFunc(markers[1].lng) : null}
 
 
 
@@ -72,9 +75,9 @@ function Map() {
     ]
     navigate("/createShoppingList", { state: { markers: markers } })
   }
+
   return (
     <div className='rowC'>
-
 
       <div className='box'>
         <p></p>
@@ -82,14 +85,12 @@ function Map() {
         <Button variant="success" size="lg" disabled={entity === "customer" ? false : true} onClick={createShoppingList}>Create shopping list</Button>
       </div>
 
-
       <MapContainer center={[52.3676, 4.9041]} zoom={13} scrollWheelZoom={true} whenCreated={map => setMap(map)}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
-        <AddMarkerToClick setEntityFunc={setEntity} setCustomerLatFunc={setCustomerLat} setCustomerLngFunc={setCustomerLng} setShopperLatFunc={setShopperLat} setShopperLngFunc={setShopperLng}/>
+        <AddMarkerToClick setEntityFunc={setEntity} setCustomerLatFunc={setCustomerLat} setCustomerLngFunc={setCustomerLng} setShopperLatFunc={setShopperLat} setShopperLngFunc={setShopperLng} />
       </MapContainer>
 
     </div>

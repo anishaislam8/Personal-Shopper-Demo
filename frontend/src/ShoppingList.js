@@ -1,3 +1,7 @@
+// Resources used for connecting to the flask backend: https://www.youtube.com/watch?v=06pWsB_hoD4 
+// Resources used for creating the shopping list: https://youtu.be/tkDym1sohI4 
+// Resources used for creating the spinner: https://contactmentor.com/how-to-add-loading-spinner-react-js/ 
+
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import "./shoppingList.css"
@@ -49,7 +53,7 @@ function ShoppingList() {
 
   const navigate = useNavigate();
 
-  function checkArrayInBackendConsole() {
+  function sendLocationsAndShoppingListToBackendAndGetRoutingInformation() {
     console.log("Objects stored in array: ", inputArr)
     
     setSpinner(true);
@@ -117,7 +121,7 @@ function ShoppingList() {
         </tbody>
       </table>
       <br /><br />
-      <Button variant="success"  onClick={checkArrayInBackendConsole}>Submit</Button>
+      <Button variant="success"  onClick={sendLocationsAndShoppingListToBackendAndGetRoutingInformation}>Submit</Button>
       {spinner && (
         <div className="loader-container">
           <div className="spinner"></div>

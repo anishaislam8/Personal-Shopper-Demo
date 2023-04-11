@@ -1,143 +1,58 @@
 from flask import Flask, Response, request
-import pymongo
 import json
 from Main import *
 import numpy as np
 
-try:
-    mongo = pymongo.MongoClient(
-        host="localhost", port=27017, serverSelectionTimeoutMS=1000)
-    db = mongo.PersonalShopper
-    mongo.server_info()  # trigger exception if not connected to the db
-except:
-    print("Error! cannot connect to db")
-
 app = Flask(__name__)
-
-
-@app.route("/shops", methods=["GET"])
-def get_shop():
-    try:
-        # data = list(db.shops.find())
-        # for shop in data:
-        #     shop["_id"] = str(shop["_id"])
-        # read the data from the ./datasets/Amsterdam/poi/originals/PoiAMS50.txt and convert it to json
-        data = []
-        with open('./datasets/Amsterdam/poi/originals/PoiAMS50.txt', 'r') as f:
-            lines = f.readlines()
-            for line in lines:
-                line = line.split(' ')
-                data.append({
-                    "_id": line[0],
-                    "longitude": line[1],
-                    "latitude": line[2]
-                })
-        return Response(
-            response=json.dumps(
-                data
-            ),
-            status=200,
-            mimetype="application/json"
-        )
-    except Exception as ex:
-        print(ex)
-        return Response(
-            response=json.dumps(
-                {"message": "cannot find shops"}
-            ),
-            status=500,
-            mimetype="application/json"
-        )
-
-
-@app.route("/shops", methods=["POST"])
-def create_shop():
-    try:
-        shop = {"name": request.form["name"], "latitute": request.form["latitude"],
-                "longitude": request.form["longitude"]}
-        dbResponse = db.shops.insert_one(shop)
-        return Response(
-            response=json.dumps(
-                {"message": "shop created", "id": f"{dbResponse.inserted_id}"}
-            ),
-            status=200,
-            mimetype="application/json"
-        )
-    except Exception as ex:
-        print(ex)
-
-
-@app.route("/locations", methods=["GET"])
-def get_locations():
-    try:
-        # data = list(db.shops.find())
-        # for shop in data:
-        #     shop["_id"] = str(shop["_id"])
-        # read the data from the ./datasets/Amsterdam/poi/originals/PoiAMS50.txt and convert it to json
-        data = []
-        with open('./datasets/Amsterdam/roadnetwork/RoadVerticesAMS.txt', 'r') as f:
-            lines = f.readlines()
-            for line in lines:
-                line = line.split(' ')
-                data.append({
-                    "_id": line[0],
-                    "longitude": line[1],
-                    "latitude": line[2]
-                })
-        return Response(
-            response=json.dumps(
-                data
-            ),
-            status=200,
-            mimetype="application/json"
-        )
-    except Exception as ex:
-        print(ex)
-        return Response(
-            response=json.dumps(
-                {"message": "cannot find road vertices"}
-            ),
-            status=500,
-            mimetype="application/json"
-        )
 
 
 @app.route("/productList", methods=["POST"])
 def receive_product_list():
     try:
-        shopping_list = request.get_json()
+        info_from_frontend = request.get_json()
 
-        startingLat = float(shopping_list[0]["name"])
-        startingLong = float(shopping_list[1]["name"])
-        endingLat = float(shopping_list[2]["name"])
-        endingLong = float(shopping_list[3]["name"])
+        # get the customer and shopper's location
+        startingLat = float(info_from_frontend[0]["name"])
+        startingLong = float(info_from_frontend[1]["name"])
+        endingLat = float(info_from_frontend[2]["name"])
+        endingLong = float(info_from_frontend[3]["name"])
+
+        # get the items to buy
         itemsToBuy = []
-        for item in shopping_list[4:]:
+        for item in info_from_frontend[4:]:
             itemsToBuy.append(int(item["name"]))
 
+        # get the routes and the start and end nodes for the routes
         route1, route2, startNode, endNode = routing_algo(
             itemsToBuy, startingLat, startingLong, endingLat, endingLong)
 
+        # shoppersPosition contains the lat and long of the shopper, customersPosition contains the lat and long of the customer
         shoppersPosition = []
         customersPosition = []
-        startNodeArr = []
-        endNodeArr = []
-
-        startNodeArr.append(startNode["lat"])
-        startNodeArr.append(startNode["long"])
-        endNodeArr.append(endNode["lat"])
-        endNodeArr.append(endNode["long"])
         shoppersPosition.append(startingLat)
         shoppersPosition.append(startingLong)
         customersPosition.append(endingLat)
         customersPosition.append(endingLong)
 
+        # startNodeArr and endNodeArr contain the lat and long of the start and end nodes
+        startNodeArr = []
+        endNodeArr = []
+        startNodeArr.append(startNode["lat"])
+        startNodeArr.append(startNode["long"])
+        endNodeArr.append(endNode["lat"])
+        endNodeArr.append(endNode["long"])
+
+        # route1POILatLong and route2POILatLong contain the lat and long of the POIs for each route
+        # starting from the shopper's location -> start node -> poi -> end node -> customer's location
+        # the shopper's location and the start node are added to the array first
         route1POILatLong = []
         route1POILatLong.append(shoppersPosition)
         route1POILatLong.append(startNodeArr)
         route2POILatLong = []
         route2POILatLong.append(shoppersPosition)
         route2POILatLong.append(startNodeArr)
+
+        # get the lat and long of the POIs from the POIAMS50.txt file
         data = []
         with open('./datasets/Amsterdam/poi/originals/PoiAMS50.txt', 'r') as f:
             lines = f.readlines()
@@ -148,9 +63,12 @@ def receive_product_list():
                     "longitude": line[1],
                     "latitude": line[2]
                 })
+
+        # get the POIs generated by the routing algorithm for each route
         route1_pois = np.unique(route1.getPOIs())
         route2_pois = np.unique(route2.getPOIs())
-        
+
+        # append the lat and long of the POIs to the route1POILatLong and route2POILatLong arrays
         for item in route1_pois:
             lat_long = []
             lat_long.append(float(data[item]["latitude"]))
@@ -161,10 +79,14 @@ def receive_product_list():
             lat_long.append(float(data[item]["latitude"]))
             lat_long.append(float(data[item]["longitude"]))
             route2POILatLong.append(lat_long)
+
+        # append the lat and long of the end node and customer's location to the route1POILatLong and route2POILatLong arrays
         route1POILatLong.append(endNodeArr)
         route1POILatLong.append(customersPosition)
         route2POILatLong.append(endNodeArr)
         route2POILatLong.append(customersPosition)
+
+        # return the routes, the total costs, the costs for each POI, the POIs and the items to buy to the frontend
         return Response(
             response=json.dumps(
                 {"route1": route1POILatLong, "route2": route2POILatLong, "route1TotalCost": route1.getTotalCost(
@@ -176,30 +98,6 @@ def receive_product_list():
         )
     except Exception as ex:
         print(ex)
-
-
-@app.route("/products", methods=["GET"])
-def get_products():
-    try:
-        data = list(db.items_per_store.find())
-        for item in data:
-            item["_id"] = str(item["_id"])
-        return Response(
-            response=json.dumps(
-                data
-            ),
-            status=200,
-            mimetype="application/json"
-        )
-    except Exception as ex:
-        print(ex)
-        return Response(
-            response=json.dumps(
-                {"message": "cannot find items"}
-            ),
-            status=500,
-            mimetype="application/json"
-        )
 
 
 if __name__ == "__main__":
