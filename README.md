@@ -10,20 +10,20 @@ This project is a web prototype for the [Personal Shopper problem](https://arxiv
 
 ### Step 1: Selecting shopper and customer locations
 
-![Selecting shopper location](../images/shoper_location.png)
+![Selecting shopper location](images/shoper_location.png)
 
 
-![Selecting customer location](../images/customer_location.png)
+![Selecting customer location](images/customer_location.png)
 
 
 ### Step 2: Selecting items needed by the customer
 
-![Selecting items to buy](../images/shopping_list.png)
+![Selecting items to buy](images/shopping_list.png)
 
 
 ### Step 3: Showing both optimal and sub-optimal linear skyline routes
 
-![Showing route 1](../images/display_route1.png)
+![Showing route 1](images/display_route1.png)
 
-![Showing route 2](../images/display_route2.png)
+![Showing route 2](images/display_route2.png)
 
