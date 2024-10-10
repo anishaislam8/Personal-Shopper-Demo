@@ -10,7 +10,7 @@ This project is a web prototype for the [Personal Shopper problem](https://arxiv
 
 ### Step 1: Selecting shopper and customer locations
 
-![Selecting shopper location](images/shoper_location.png)
+![Selecting shopper location](images/shopper_location.png)
 
 
 ![Selecting customer location](images/customer_location.png)
